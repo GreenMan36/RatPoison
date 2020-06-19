@@ -1,4 +1,4 @@
-package rat.poison.scripts
+﻿package rat.poison.scripts
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.MathUtils.clamp
 import com.badlogic.gdx.utils.Align
 import rat.poison.App
+import rat.poison.checkFlags
 import rat.poison.curSettings
 import rat.poison.game.CSGO
 import rat.poison.game.CSGO.csgoEXE
@@ -23,7 +24,7 @@ var hitMarkerCombo = 0
 private var totalHits = 0
 
 fun hitMarker() = App {
-    if ((!curSettings["ENABLE_HITMARKER"].strToBool() && !curSettings["HITMARKER_COMBO"].strToBool()) ||  !curSettings["ENABLE_ESP"].strToBool() || MENUTOG || me.dead()) return@App
+    if ((!curSettings["ENABLE_HITMARKER"].strToBool() && !curSettings["HITMARKER_COMBO"].strToBool()) || !checkFlags("ENABLE_HITMARKER") || !curSettings["ENABLE_ESP"].strToBool() || MENUTOG || me.dead()) return@App
 
     val curHits = csgoEXE.int(me + m_totalHitsOnServer)
 
@@ -36,7 +37,7 @@ fun hitMarker() = App {
         hitMarkerCombo++
         totalHits = curHits
 
-        if (curSettings["ENABLE_ADRENALINE"].strToBool()) {
+        if (curSettings["ENABLE_ADRENALINE"].strToBool() && checkFlags("ENABLE_ADRENALINE")) {
             val cGT = currentGameTicks()
             csgoEXE[me + m_flHealthShotBoostExpirationTime] = cGT + clamp((hitMarkerCombo * .5F), 0F, 2.5F)
         }
@@ -76,7 +77,7 @@ fun hitMarker() = App {
 
             var col : rat.poison.game.Color
 
-            if (curSettings["ENABLE_HITMARKER"].strToBool()) {
+            if (curSettings["ENABLE_HITMARKER"].strToBool() && checkFlags("ENABLE_HITMARKER")) {
                 if (curSettings["HITMARKER_OUTLINE"].strToBool()) { //Outline
                     col = curSettings["HITMARKER_OUTLINE_COLOR"].strToColor()
                     setColor(col.red / 255F, col.green / 255F, col.blue / 255F, hitMarkerAlpha)

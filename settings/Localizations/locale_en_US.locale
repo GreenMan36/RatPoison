@@ -4,9 +4,15 @@ ENEMIES = Enemies
 HEALTH = Health
 ARMOR = Armor
 NAME = Name
+YES = Yes
+NO = No
 GRENADES = Grenades
 TARGET = Target
 WEAPON = Weapon
+ON_KEY = On Key
+_SWITCH_KEY = Toggle Key
+_DISABLE_KEY = Disable On Key
+_KEY = Key
 WARNING = Warning
 SCOPE = Scope
 BONES = Bones
@@ -182,7 +188,7 @@ ENABLE_DEBUG = Debug
 KEYBINDS = Keybinds
 GAUSSIAN_BLUR = Gaussian Blur
 JOIN_DISCORD = Join Discord
-MENU_ALPHA_SLIDER = Menu Alpha:
+MENU_ALPHA_SLIDER = Menu Alpha
 SAVE_CONFIG = Save CFG
 ENTER_CONFIG_NAME = Enter config name:
 LOAD_CONFIG = Load CFG
@@ -253,6 +259,10 @@ FOOTSTEPS_TEXT = Text
 FOOTSTEPS_CIRCLE = Circle
 // Glow Esp tab
 INV_GLOW_ESP = Inv Glow
+NORMAL = Normal
+MODEL = Model
+VISIBLE = Visible
+VISIBLE_FLICKER = Visible Flicker
 MODEL_ESP = Model
 MODEL_AND_GLOW = Model & Glow
 // HitMarkers tab
@@ -275,8 +285,8 @@ NADE_TRACER_TIMEOUT = Tracer Timeout
 // Override weapons panel
 CATEGORY = Category:
 ENABLE_OVERRIDE = Enable Override
-OVERRIDE_AIM_SPEED = Speed:
-OVERRIDE_SMOOTH = Smooth:
+OVERRIDE_AIM_SPEED = Speed
+OVERRIDE_SMOOTH = Smooth
 
 // Spectator list
 NAME_PREFIX = name:
@@ -481,6 +491,7 @@ HITMARKER_RECOIL_POSITION_TOOLTIP = Whether or not hitmarket show recoil positio
 INDICATOR_SIZE_TOOLTIP = Size of the indicator
 HOLD_AIM_TOOLTIP = Aims at the enemy even after he left the FOV of the aimbot
 VARIATION_DEADZONE_TOOLTIP = Variation of area where variation doesnt occur
+GAME_SENSITIVITY_TOOLTIP = Input your mouse sensitivity here, it has to match the game one otherwise using path aim will be highly inaccurate
 
 // Backtrack
 ENABLE_BACKTRACK = Master Backtrack Switch
@@ -491,3 +502,14 @@ BACKTRACK_MS = Max MS
 BACKTRACK_PREFER_ACCURATE = Prefer Accurate Records
 BACKTRACK_SPOTTED = Check Visible
 ENABLE_WEAPON_BACKTRACK = Enable Weapon Backtrack
+
+// Binds panel
+ALWAYS_ON = Always On
+TOGGLE_KEY = Toggle Key
+ON_HOTKEY = On Hotkey
+OFF_HOTKEY = Off Hotkey
+
+// Keybinds panel
+KEYBINDS_TOGGLE = [Toggle Key]
+KEYBINDS_ON_KEY = [On Key]
+KEYBINDS_OFF_KEY = [Off Key]

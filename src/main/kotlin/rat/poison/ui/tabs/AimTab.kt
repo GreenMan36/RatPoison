@@ -102,7 +102,6 @@ fun updateAim() {
     aimTab.tAim.apply {
         enableAim.update()
         updateMap()
-        aimToggleKey.update()
         activateFromFireKey.update()
         teammatesAreEnemies.update()
         holdAim.update()
@@ -206,8 +205,6 @@ fun updateDisableTrig() {
         if (bool) {
             col = Color(105F, 105F, 105F, .2F)
         }
-        boneTriggerEnableKey.disable(bool)
-        boneTriggerKey.disable(bool, col)
         categorySelectLabel.color = col
         categorySelectionBox.isDisabled = bool
         if (!aimTab.tAim.enableAim.isChecked) {
@@ -230,8 +227,6 @@ fun updateTrig() {
     aimTab.tTrig.apply {
         enableTrig.update()
         enableTrig.update()
-        boneTriggerEnableKey.update()
-        boneTriggerKey.update()
         trigInCross.update()
         trigInFov.update()
         trigFov.update()
@@ -254,8 +249,6 @@ fun updateDisableBacktrack() {
 
         //enableBacktrack.disable(bool)
         backtrackVisualize.disable(bool)
-        backtrackEnableKey.disable(bool)
-        backtrackKey.disable(bool, col)
         backtrackFOV.disable(bool, col)
         backtrackMS.disable(bool, col)
         backtrackSpotted.disable(bool)
@@ -276,8 +269,6 @@ fun updateBacktrack() {
         enableBacktrack.update()
         bonesVisLabel.update()
         backtrackVisualize.update()
-        backtrackEnableKey.update()
-        backtrackKey.update()
         backtrackFOV.update()
         backtrackMS.update()
         backtrackPreferAccurate.update()

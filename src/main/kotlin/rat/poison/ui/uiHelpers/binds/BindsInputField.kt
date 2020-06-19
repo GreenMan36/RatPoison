@@ -1,4 +1,4 @@
-﻿package rat.poison.ui.uiHelpers
+package rat.poison.ui.uiHelpers.binds
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -8,10 +8,10 @@ import rat.poison.curLocalization
 import rat.poison.curSettings
 import rat.poison.ui.changed
 
-class VisInputFieldCustom(mainText: String, varName: String, addLink: Boolean = true, isInt: Boolean = true,  nameInLocalization: String = varName) : VisTable() {
-    private val defaultText = mainText
-    private val variableName = varName
-    private val localeName = nameInLocalization
+class BindsInputField(localeName: String, varName: String, addLink: Boolean = true, isInt: Boolean = true) : VisTable() {
+    private val defaultText = curLocalization[localeName]
+    var variableName = varName + localeName
+    private val localeName = localeName
     private val intVal = isInt
 
     //val globalTable = VisTable()
@@ -23,12 +23,9 @@ class VisInputFieldCustom(mainText: String, varName: String, addLink: Boolean = 
 
     init {
         update()
-        if (curLocalization[nameInLocalization+"_TOOLTIP"] != "") {
-            Tooltip.Builder(curLocalization[nameInLocalization+"_TOOLTIP"]).target(this).build()
-        }
 
         changed { _, _ ->
-            if ((keyField.text.toIntOrNull() != null && intVal) || (keyField.text.toDoubleOrNull() != null && !intVal)) {
+            if (keyField.text.toIntOrNull() != null) {
                 if (keyField.text != curSettings[variableName]) {
                     if (intVal) {
                         curSettings[variableName] = keyField.text.toInt().toString()
@@ -54,11 +51,16 @@ class VisInputFieldCustom(mainText: String, varName: String, addLink: Boolean = 
         if (neglect != this) {
             val tmpText = curLocalization[localeName]
             this.keyLabel.setText(if (tmpText.isBlank()) defaultText else tmpText)
-            keyField.text = curSettings[variableName]
-            value = if (intVal) {
-                keyField.text.toInt()
-            } else {
-                keyField.text.toDouble()
+            if (!curSettings[variableName].isBlank()) {
+                keyField.text = curSettings[variableName]
+                value = if (intVal) {
+                    keyField.text.toInt()
+                } else {
+                    keyField.text.toDouble()
+                }
+            }
+            else {
+                keyField.text = "22"
             }
         }
     }

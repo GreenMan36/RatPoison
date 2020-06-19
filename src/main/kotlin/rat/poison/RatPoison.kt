@@ -1,4 +1,4 @@
-@file:JvmName("RatPoison")
+﻿@file:JvmName("RatPoison")
 @file:Suppress("BlockingMethodInNonBlockingContext")
 
 package rat.poison
@@ -33,7 +33,6 @@ import rat.poison.jna.enums.AccentStates
 import rat.poison.overlay.Overlay
 import rat.poison.scripts.*
 import rat.poison.scripts.aim.flatAim
-import rat.poison.scripts.aim.handleFireKey
 import rat.poison.scripts.aim.pathAim
 import rat.poison.scripts.aim.setAim
 import rat.poison.scripts.bspHandling.rayTraceTest
@@ -47,6 +46,8 @@ import rat.poison.ui.uiPanels.*
 import rat.poison.ui.uiUpdate
 import rat.poison.utils.ObservableBoolean
 import rat.poison.utils.Settings
+import rat.poison.utils.addListeners
+import rat.poison.utils.constructVars
 import rat.poison.utils.extensions.appendHumanReadableSize
 import rat.poison.utils.extensions.roundNDecimals
 import rat.poison.utils.varUtil.strToBool
@@ -93,6 +94,10 @@ fun visualsMap (): Settings {
     map[curLocalization["RIGHT"]] = "RIGHT"
     map[curLocalization["TOP"]] = "TOP"
     map[curLocalization["BOTTOM"]] = "BOTTOM"
+    map[curLocalization["NORMAL"]] = "Normal"
+    map[curLocalization["MODEL"]] = "Model"
+    map[curLocalization["VISIBLE"]] = "Visible"
+    map[curLocalization["VISIBLE_FLICKER"]] = "Visible Flicker"
     return map
 }
 fun aimingMap () : Settings {
@@ -186,6 +191,7 @@ fun main() {
     if (dbg) { println("[DEBUG] Initializing Reduced Flash") }; reducedFlash()
     if (dbg) { println("[DEBUG] Initializing ESPs") }; esp()
     if (dbg) { println("[DEBUG] Initializing Esp Toggle") }; espToggle()
+    //if (dbg) { println("[DEBUG] Initializing Automatic Weapons") }; automaticWeapon()
     if (dbg) { println("[DEBUG] Initializing Fast Stop") }; fastStop()
     if (dbg) { println("[DEBUG] Initializing Head Walk (Currently disabled)") }; headWalk()
     if (dbg) { println("[DEBUG] Initializing Adrenaline") }; adrenaline()
@@ -195,9 +201,8 @@ fun main() {
     if (dbg) { println("[DEBUG] Initializing Weapon Changer") }; skinChanger()
     if (dbg) { println("[DEBUG] Initializing NightMode/FullBright") }; nightMode()
 
-    if (dbg) { println("[DEBUG] Initializing Backtrack") }; setupBacktrack()
-    if (dbg) { println("[DEBUG] Initializing Draw Backtrack") }; drawBacktrack()
-    if (dbg) { println("[DEBUG] Initializing Handle Fire Key") }; handleFireKey()
+    setupBacktrack()
+    drawBacktrack()
 
     if (EXPERIMENTAL) {
         rayTraceTest() //Dont bother rn
@@ -298,8 +303,6 @@ fun loadSettingsFromFiles(fileDir : String, specificFile : Boolean = false) {
 
 var opened = false
 var overlayMenuKey = ObservableBoolean({keyPressed(1)})
-var toggleAimKey = ObservableBoolean({keyPressed(1)})
-var toggleRCSKey = ObservableBoolean({keyPressed(1)})
 
 var syncTime = 0L
 var glowTime = 0L
@@ -330,10 +333,8 @@ object App : ApplicationAdapter() {
 
     override fun create() {
         overlayMenuKey = ObservableBoolean({ keyPressed(curSettings["MENU_KEY"].toInt()) })
-        toggleAimKey = ObservableBoolean({ keyPressed(curSettings["AIM_TOGGLE_KEY"].toInt()) })
-        toggleRCSKey = ObservableBoolean({ keyPressed(curSettings["RCS_TOGGLE_KEY"].toInt()) })
+        constructVars()
         VisUI.load(Gdx.files.internal("skin\\tinted.json"))
-
         //Implement stage for menu
         menuStage = Stage() //Main Menu Stage
 
@@ -344,7 +345,6 @@ object App : ApplicationAdapter() {
         uiSpecList = UISpectatorList()
         uiAimOverridenWeapons = UIAimOverridenWeapons()
         uiKeybinds = UIKeybinds()
-
         menuStage.addActor(uiMenu)
 
         Gdx.input.inputProcessor = InputMultiplexer().apply {
@@ -379,6 +379,7 @@ object App : ApplicationAdapter() {
                                 if (curSettings["KEYBINDS"].strToBool()) {
                                     if (!menuStage.actors.contains(uiKeybinds)) {
                                         menuStage.addActor(uiKeybinds)
+                                        uiKeybinds.updateBindsList()
                                     }
                                 } else if (menuStage.actors.contains(uiKeybinds)) {
                                     menuStage.clear()
@@ -399,7 +400,7 @@ object App : ApplicationAdapter() {
                                 menuStage.clear()
                             }
 
-                            if (curSettings["ENABLE_BOMB_TIMER"].strToBool() && curSettings["BOMB_TIMER_MENU"].strToBool() && curSettings["ENABLE_ESP"].strToBool()) {
+                            if (curSettings["ENABLE_BOMB_TIMER"].strToBool() && checkFlags("ENABLE_BOMB_TIMER") && curSettings["BOMB_TIMER_MENU"].strToBool() && checkFlags("BOMB_TIMER_MENU") && curSettings["ENABLE_ESP"].strToBool() && checkFlags("ENABLE_ESP")) {
                                 if (!menuStage.actors.contains(uiBombWindow)) {
                                     menuStage.addActor(uiBombWindow)
                                 }
@@ -407,7 +408,7 @@ object App : ApplicationAdapter() {
                                 menuStage.clear() //actors.remove at index doesnt work after 1 loop?
                             }
 
-                            if (curSettings["SPECTATOR_LIST"].strToBool() && curSettings["ENABLE_ESP"].strToBool()) {
+                            if (curSettings["SPECTATOR_LIST"].strToBool() && checkFlags("SPECTATOR_LIST") && curSettings["ENABLE_ESP"].strToBool() && checkFlags("ENABLE_ESP")) {
                                 if (!menuStage.actors.contains(uiSpecList)) {
                                     menuStage.addActor(uiSpecList)
                                 }
@@ -488,21 +489,10 @@ object App : ApplicationAdapter() {
 
                     uiMenu.updateChilds()
                     uiUpdate()
-
+                    curSettings["BINDS"] = "false"
                     if (dbg) println("[DEBUG] Menu Toggled")
                 }
-
-                //Aim Toggle Key
-                toggleAimKey.update()
-                if (toggleAimKey.justBecameTrue) {
-                    aimTab.tAim.enableAim.isChecked = !aimTab.tAim.enableAim.isChecked
-                }
-
-                // RCS Toggle Key
-                toggleRCSKey.update()
-                if (toggleRCSKey.justBecameTrue) {
-                    rcsTab.enableRCS.isChecked = !rcsTab.enableRCS.isChecked
-                }
+                addListeners()
 
                 val w = overlay.width
                 val h = overlay.height
@@ -589,6 +579,7 @@ fun getSystemLocale(): Locale? {
     return Locale.getDefault()
 }
 
+
 fun convStrToColor(input: String): rat.poison.game.Color { //Rat poison color
     var line = input
     line = line.replace("Color(", "").replace(")", "").replace(",", "")
@@ -631,6 +622,10 @@ fun List<String>.pull(idx: Int): String {
     val tStr = this[idx].replace(" ", "") //Remove spaces
     val split = tStr.split("=")
     return split[1]
+}
+
+fun checkFlags(nameInSettings: String): Boolean {
+    return ((curSettings[nameInSettings+"_ON_KEY"].strToBool() && keyPressed(curSettings[nameInSettings+"_KEY"].toInt())) || (!curSettings[nameInSettings+"_ON_KEY"].strToBool() && ((curSettings[nameInSettings+"_DISABLE_ON_KEY"].strToBool() && !keyPressed(curSettings[nameInSettings+"_DISABLE_KEY"].toInt())) || !curSettings[nameInSettings+"_DISABLE_ON_KEY"].strToBool())))
 }
 
 //Matrix 4 uses column-major order

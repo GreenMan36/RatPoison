@@ -58,7 +58,7 @@ class OverrideVisSliderCustom(mainText: String, varName: String, varMin: Float, 
         }
         val tmpText = curLocalization[localeName]
         //curSettings[variableName] = sliderVal.toString()
-        sliderLabel.setText(if (tmpText.isBlank()) "$defaultText : $sliderVal" else tmpText )
+        sliderLabel.setText(if (tmpText.isBlank()) "$defaultText : $sliderVal" else "$tmpText : $sliderVal" )
     }
 
     fun disable(bool: Boolean, col: Color) {
