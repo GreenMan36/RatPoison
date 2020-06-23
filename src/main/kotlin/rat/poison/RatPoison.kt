@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import org.jire.arrowhead.keyPressed
 import org.lwjgl.glfw.GLFW.*
 import rat.poison.game.CSGO
+import rat.poison.game.hooks.cursorEnable
 import rat.poison.game.updateViewMatrix
 import rat.poison.interfaces.IOverlay
 import rat.poison.interfaces.IOverlayListener
@@ -200,6 +201,7 @@ fun main() {
     if (dbg) { println("[DEBUG] Initializing Weapon Spam") }; weaponSpam()
     if (dbg) { println("[DEBUG] Initializing Weapon Changer") }; skinChanger()
     if (dbg) { println("[DEBUG] Initializing NightMode/FullBright") }; nightMode()
+    if (dbg) { println("[DEBUG] Initializing Nade Thrower") }; nadeThrower()
 
     setupBacktrack()
     drawBacktrack()
@@ -272,9 +274,10 @@ fun loadSettingsFromFiles(fileDir : String, specificFile : Boolean = false) {
         FileReader(File(fileDir)).readLines().forEach { line ->
             if (!line.startsWith("import") && !line.startsWith("/") && !line.startsWith("\"") && !line.startsWith(" *") && !line.startsWith("*") && line.trim().isNotEmpty()) {
                 val curLine = line.trim().split(" ".toRegex(), 3) //Separate line into VARIABLE NAME : "=" : VALUE
-
                 if (curLine.size == 3) {
-                    curSettings[curLine[0]] = curLine[2]
+                    if ("oWeapon" !in line) {
+                        curSettings[curLine[0]] = curLine[2]
+                    }
                 } else {
                     println("Debug: Setting invalid -- $curLine")
                 }
@@ -625,9 +628,10 @@ fun List<String>.pull(idx: Int): String {
 }
 
 fun checkFlags(nameInSettings: String): Boolean {
-    return ((curSettings[nameInSettings+"_ON_KEY"].strToBool() && keyPressed(curSettings[nameInSettings+"_KEY"].toInt())) || (!curSettings[nameInSettings+"_ON_KEY"].strToBool() && ((curSettings[nameInSettings+"_DISABLE_ON_KEY"].strToBool() && !keyPressed(curSettings[nameInSettings+"_DISABLE_KEY"].toInt())) || !curSettings[nameInSettings+"_DISABLE_ON_KEY"].strToBool())))
+    val keyType = curSettings[nameInSettings + "_KEY_TYPE"]
+    val key = curSettings[nameInSettings + "_KEY"].toInt()
+    return (keyType == "OnKey" && keyPressed(key)) || (keyType == "OffKey" && !keyPressed(key)) || (keyType != "OffKey" && keyType != "OnKey")
 }
-
 //Matrix 4 uses column-major order
 fun Array<DoubleArray>.toMatrix4(): Matrix4 {
     val input = this
