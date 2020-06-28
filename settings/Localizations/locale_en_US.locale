@@ -128,6 +128,7 @@ AIM_SPEED_DIVISOR = Mouse Move Divisor
 
 // Misc tab
 ENABLE_BUNNY_HOP = Bunny Hop
+BHOP_HITCHANCE = Hitchance
 AUTO_STRAFE = Auto Strafe
 STRAFE_BHOP_ONLY = BHop Only
 FAST_STOP = Fast Stop
@@ -504,7 +505,7 @@ HITMARKER_RECOIL_POSITION_TOOLTIP = Whether or not hitmarket show recoil positio
 INDICATOR_SIZE_TOOLTIP = Size of the indicator
 HOLD_AIM_TOOLTIP = Aims at the enemy even after he left the FOV of the aimbot
 VARIATION_DEADZONE_TOOLTIP = Variation of area where variation doesnt occur
-LEGIT_RADAR_TOOLTIP = Show enemies on radar depend on their footsteps
+LEGIT_RADAR_TOOLTIP = Show enemies on radar depends on their footsteps
 
 // Backtrack
 ENABLE_BACKTRACK = Master Backtrack Switch
