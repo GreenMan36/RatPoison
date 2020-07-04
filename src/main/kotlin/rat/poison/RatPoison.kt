@@ -142,7 +142,6 @@ fun main() {
     dbg = curSettings["DEBUG"].strToBool()
 
     if (dbg) println("DEBUG enabled")
-    constructVars()
     Thread.sleep(5000)
     println("Launching...")
 
@@ -187,7 +186,8 @@ fun main() {
     if (dbg) { println("[DEBUG] Initializing Auto Knife") }; autoKnife()
     if (dbg) { println("[DEBUG] Initializing Reduced Flash") }; reducedFlash()
     if (dbg) { println("[DEBUG] Initializing ESPs") }; esp()
-    noSmoke()
+    if (dbg) { println("[DEBUG] Initializing Nade Helper Map Detection") }; detectJoin()
+    if (dbg) { println("[DEBUG] Initializing No Smoke") }; noSmoke()
     //if (dbg) { println("[DEBUG] Initializing Automatic Weapons") }; automaticWeapon()
     if (dbg) { println("[DEBUG] Initializing Fast Stop") }; fastStop()
     if (dbg) { println("[DEBUG] Initializing Head Walk (Currently disabled)") }; headWalk()
@@ -488,7 +488,7 @@ object App : ApplicationAdapter() {
                     curSettings["BINDS"] = "false"
                     if (dbg) println("[DEBUG] Menu Toggled")
                 }
-                addListeners()
+                callUpdates()
 
                 val w = overlay.width
                 val h = overlay.height
